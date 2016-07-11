@@ -73,7 +73,7 @@ int k_uart_read(KUARTNum uart, char *ptr, int len)
     BaseType_t result;
 
     for (; i < len; i++, ptr++) {
-        result = xQueueReceive(k_uarts[uart].rx_queue, ptr, portMAX_DELAY);
+        result = xQueueReceive(k_uarts[uart].rx_queue, ptr, 0);
         if (result != pdTRUE) {
             return i;
         }
