@@ -99,6 +99,14 @@ typedef enum {
 } I2CRole;
 
 /**
+ * i2c conditions.
+ */
+typedef enum {
+    K_STOP = 0,
+    K_START
+} KI2CCOND;
+
+/**
  * i2c configuration structure
  */
 typedef struct {
@@ -192,6 +200,19 @@ KI2CStatus k_i2c_write(KI2CNum i2c, uint16_t addr, uint8_t *ptr, int len);
 KI2CStatus k_i2c_read(KI2CNum i2c, uint16_t addr, uint8_t *ptr, int len);
 
 /**
+ * Signal bus events
+ *
+ * In order to ensure safe i2c sharing, this function is semaphore locked.
+ * There is one semaphore per bus. This function will block indefinitely
+ * while waiting for the semaphore.
+ *
+ * @param i2c i2c bus to set condition on
+ * @param condition i2c condition to trigger
+ * @return int I2C_OK on success, I2C_ERROR on error
+ */
+KI2CStatus k_i2c_send_condition(KI2CNum i2c, KI2CCOND condition);
+
+/**
  * Fetches i2c bus data structure
  * @param i2c number of i2c bus to fetch
  * @return KI2C* pointer to data structure
@@ -257,6 +278,17 @@ KI2CStatus kprv_i2c_slave_write(KI2CNum i2c, uint16_t addr, uint8_t *ptr, int le
  * @return KI2CStatus I2C_OK on success, I2C_ERROR on error
  */
 KI2CStatus kprv_i2c_slave_read(KI2CNum i2c, uint16_t addr, uint8_t *ptr, int len);
+
+/**
+ * Low level hal i2c signal specific bus events
+ * This is implemented by the device specific hal
+ * @param i2c i2c bus to set condition on
+ * @param condition i2c condition to trigger
+ * @return KI2CStatus I2C_OK on success, I2C_ERROR on error
+ */
+KI2CStatus kprv_i2c_send_condition(KI2CNum i2c, KI2CCOND condition);
+
+
 
 #endif
 #endif
