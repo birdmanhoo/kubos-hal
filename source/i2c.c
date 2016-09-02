@@ -97,4 +97,21 @@ KI2C* kprv_i2c_get(KI2CNum i2c)
     return &k_i2cs[i2c];
 }
 
+KI2CStatus k_i2c_send_condition(KI2CNum i2c, KI2CCOND condition)
+{
+    KI2C * ki2c = kprv_i2c_get(i2c);
+    KI2CStatus ret = I2C_ERROR;
+    if (ki2c->i2c_lock != NULL)
+    {
+        // Today...block indefinitely
+        if (xSemaphoreTake(ki2c->i2c_lock, (TickType_t)portMAX_DELAY) == pdTRUE)
+        {
+            ret = kprv_i2c_send_condition(i2c, condition);
+            xSemaphoreGive(ki2c->i2c_lock);
+        }
+    }
+    return ret;
+}
+
+
 #endif
